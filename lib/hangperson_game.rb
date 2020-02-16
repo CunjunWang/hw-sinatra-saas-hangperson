@@ -7,9 +7,34 @@ class HangpersonGame
 
   # def initialize()
   # end
-  
+
+  attr_accessor :word, :guesses, :wrong_guesses
+
   def initialize(word)
     @word = word
+    @guesses = ""
+    @wrong_guesses = ""
+  end
+
+  def guess(guess_letter)
+    ## if the letter is guessed before
+    if @word.include? guess_letter
+      if include_letter?(@guesses, guess_letter)
+        false
+      end
+      @guesses = @guesses + guess_letter
+      true
+    else
+      if include_letter?(@wrong_guesses, guess_letter)
+        false
+      end
+      @wrong_guesses = @wrong_guesses + guess_letter
+      true
+    end
+  end
+
+  def include_letter?(str, letter)
+    (str.include? letter) or (str.include? letter.upcase) or (str.include? letter.downcase)
   end
 
   # You can test it by running $ bundle exec irb -I. -r app.rb
