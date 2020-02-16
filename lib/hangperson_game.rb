@@ -8,25 +8,41 @@ class HangpersonGame
   # def initialize()
   # end
 
-  attr_accessor :word, :guesses, :wrong_guesses
+  attr_accessor :word, :guesses, :wrong_guesses, :word_with_guesses
 
   def initialize(word)
     @word = word
     @guesses = ""
     @wrong_guesses = ""
+    @word_with_guesses = build_guessed_word(word)
   end
 
   def guess(guess_letter)
+    if guess_letter == '' or guess_letter == nil
+      raise ArgumentError.new "Cannot guess an empty letter"
+    end
+
+    unless guess_letter.match(/[a-zA-Z]/)
+      raise ArgumentError.new "Please guess a letter."
+    end
+
     ## if the letter is guessed before
-    if @word.include? guess_letter
+    if @word.include? guess_letter.downcase
       if include_letter?(@guesses, guess_letter)
-        false
+        return false
       end
+
       @guesses = @guesses + guess_letter
+      @word.each_char.with_index do |char, index|
+        if guess_letter == char
+          @word_with_guesses[index] = guess_letter
+        end
+      end
+
       true
     else
       if include_letter?(@wrong_guesses, guess_letter)
-        false
+        return false
       end
       @wrong_guesses = @wrong_guesses + guess_letter
       true
@@ -34,7 +50,29 @@ class HangpersonGame
   end
 
   def include_letter?(str, letter)
-    (str.include? letter) or (str.include? letter.upcase) or (str.include? letter.downcase)
+    str = str.downcase
+    # puts "str = " + str
+    letter = letter.downcase
+    # puts "letter = " + letter
+    str.include? letter
+  end
+
+  def build_guessed_word(word)
+    guess_word = ""
+    word.chars do |_|
+      guess_word += "-"
+    end
+    guess_word
+  end
+
+  def check_win_or_lose
+    if @word == @word_with_guesses
+      :win
+    elsif @wrong_guesses.length >= 7
+      :lose
+    else
+      :play
+    end
   end
 
   # You can test it by running $ bundle exec irb -I. -r app.rb
